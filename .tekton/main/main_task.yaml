@@ -96,9 +96,11 @@ spec:
       image: ibmcom/pipeline-base-image
       command: ["/bin/bash", "-c"]
       args:
-        - set -e -o pipefail;
-          echo "Launching deploy pipeline";
-          echo -n "deployer.json" > $(results.localpipeline-run-deploy.path);
+        - |
+          set -e -o pipefail
+          echo "Launching deploy pipeline"
+          echo '::slsa-provenance-statement::{"subject":[{"name": "xyz", "digest": {"sha256": "abcd"}}]}'
+          echo -n "deployer.json" > $(results.localpipeline-run-deploy.path)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
