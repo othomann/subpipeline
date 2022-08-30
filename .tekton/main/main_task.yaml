@@ -37,6 +37,7 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - set -e -o pipefail;
+          echo '::slsa-provenance-statement::{"subject":[{"name": "xyz", "digest": {"sha256": "abcd"}}]}'
           echo "hi";
           env;
     - name: launch-test-suite
