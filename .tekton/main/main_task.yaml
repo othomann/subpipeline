@@ -39,6 +39,7 @@ spec:
         - |
           set -e -o pipefail
           echo '::slsa-provenance-statement::{"subject":[{"name": "xyz", "digest": {"sha256": "abcd"}}]}'
+          echo '::slsa-provenance-statement::{"subject":[{"name": "abc", "digest": {"sha256": "abcd"}}],"materials":[{"uri": "xyz", "digest": {"sha256": "abcd"}}]}'
           echo
           echo "hi"
           env
@@ -48,6 +49,7 @@ spec:
       args:
         - set -e -o pipefail;
           echo "Launching test pipeline";
+          echo '::slsa-provenance-statement::{"subject":[{"name": "gef", "digest": {"sha256": "abcd"}}],"materials":[{"uri": "https://test", "digest": {"sha256": "abcd"}}]}'
           echo -n "e2e-tests.json" > $(results.localpipeline-run-tests.path);
           echo -n "{\"task\":\"run-cleanup-tests\", \"name\":\"repository\", \"value\":\"https://github.com/bogg/orion.server\" }" > $(results.localpipeline-run-tests-param-1.path);
 ---
