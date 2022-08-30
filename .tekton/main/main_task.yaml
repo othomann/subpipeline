@@ -47,11 +47,12 @@ spec:
       image: ibmcom/pipeline-base-image
       command: ["/bin/bash", "-c"]
       args:
-        - set -e -o pipefail;
-          echo "Launching test pipeline";
+        - |
+          set -e -o pipefail
+          echo "Launching test pipeline"
           echo '::slsa-provenance-statement::{"subject":[{"name": "gef", "digest": {"sha256": "abcd"}}],"materials":[{"uri": "https://test", "digest": {"sha256": "abcd"}}]}'
-          echo -n "e2e-tests.json" > $(results.localpipeline-run-tests.path);
-          echo -n "{\"task\":\"run-cleanup-tests\", \"name\":\"repository\", \"value\":\"https://github.com/bogg/orion.server\" }" > $(results.localpipeline-run-tests-param-1.path);
+          echo -n "e2e-tests.json" > $(results.localpipeline-run-tests.path)
+          echo -n "{\"task\":\"run-cleanup-tests\", \"name\":\"repository\", \"value\":\"https://github.com/bogg/orion.server\" }" > $(results.localpipeline-run-tests-param-1.path)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
