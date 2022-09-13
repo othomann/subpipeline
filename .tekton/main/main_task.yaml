@@ -38,8 +38,8 @@ spec:
       args:
         - |
           set -e -o pipefail
-          echo '::slsa-provenance-statement::{"subject":[{"name": "xyz", "digest": {"sha256": "abcd"}}]}'
-          echo '::slsa-provenance-statement::{"subject":[{"name": "abc", "digest": {"sha256": "abcd"}}],"materials":[{"uri": "xyz", "digest": {"sha256": "abcd"}}]}'
+          echo '::slsa-provenance-statement::{"subject":[{"name": "abc", "digest": {"sha256": "abcd"}}]}'
+          echo '::slsa-provenance-statement::{"subject":[{"name": "def", "digest": {"sha256": "abcd"}}],"materials":[{"uri": "xyz", "digest": {"sha256": "abcd"}}]}'
           echo
           echo "hi"
           env
