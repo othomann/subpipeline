@@ -14,11 +14,6 @@ spec:
   workspaces:
   - name: task-pvc
     mountPath: /artifacts
-  results:
-      - name: localpipeline-run-tests
-        description: test pipeline to run - name mapped to real file in pipelines-final.json
-      - name: localpipeline-run-tests-param-1
-        description: sample param to pass to launched pipeline
   steps:
     - name: clone-repo
       image: alpine/git
@@ -51,8 +46,6 @@ spec:
           set -e -o pipefail
           echo "Launching test pipeline"
           echo '::slsa-provenance-statement::{"subject":[{"name": "gef", "digest": {"sha256": "abcd"}}],"materials":[{"uri": "https://test", "digest": {"sha256": "abcd"}}]}'
-          echo -n "e2e-tests.json" > $(results.localpipeline-run-tests.path)
-          echo -n "{\"task\":\"run-cleanup-tests\", \"name\":\"repository\", \"value\":\"https://github.com/bogg/orion.server\" }" > $(results.localpipeline-run-tests-param-1.path)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -87,10 +80,7 @@ metadata:
 spec: 
   workspaces:
   - name: task-pvc
-    mountPath: /artifacts    
-  results:
-      - name: localpipeline-run-deploy
-        description: deploy pipeline to run - name mapped to real file in pipelines-final.json    
+    mountPath: /artifacts
   steps:
     - name: deploy-with-kubectl
       image: ibmcom/pipeline-base-image
@@ -100,7 +90,6 @@ spec:
           set -e -o pipefail
           echo "Launching deploy pipeline"
           echo '::slsa-provenance-statement::{"subject":[{"name": "xyz", "digest": {"sha256": "abcd"}}]}'
-          echo -n "deployer.json" > $(results.localpipeline-run-deploy.path)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
