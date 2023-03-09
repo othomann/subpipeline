@@ -6,6 +6,10 @@ spec:
   params:
     - name: cluster
       description: the cluster to deploy to
+    - name: anothervalu
+      description: another val
+    - name: localrun_aes_key
+      description: localrun_aes_key
   workspaces:
   - name: pipeline-pvc
   tasks:  
@@ -15,6 +19,10 @@ spec:
       params:
         - name: cluster
           value: $(params.cluster)
+        - name: anothervalu
+          value: $(params.anothervalu)
+        - name: localrun_aes_key
+          value: $(params.localrun_aes_key)
       workspaces:
       - name: task-pvc
         workspace: pipeline-pvc  

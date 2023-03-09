@@ -1,0 +1,18 @@
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: briantester-vault
+spec:
+  provider:
+    vault:
+      server: "https://vserv-test.sos.ibm.com:8200"
+      path: ""
+      version: "v1"
+      auth:
+        appRole:
+          path: "approle"
+          roleId: "52d27b77-c324-2b84-79dc-0ed938d38d2e"
+          # Reference to a key in a K8 Secret that contains the App Role SecretId
+          secretRef:
+            name: "secure-properties"
+            key: "hv-key"

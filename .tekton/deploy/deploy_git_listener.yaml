@@ -1,13 +1,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: deploytemplate
+  name: git-template
 spec:
   params:
     - name: cluster
       description: the cluster
-    - name: localrun_aes
-      description: local key
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -36,25 +34,23 @@ spec:
           value: $(params.cluster)
         - name: anothervalu
           value: $(params.anothervalu)
-        - name: localrun_aes_key
-          value: $(params.localrun_aes_key)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: repobinding
+  name: git-binding
 spec:
   params:
     - name: cluster
-      value: "bog-cluster"
+      value: $(event.head_commit.id)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: deploy-listener
+  name: git-deploy-listener
 spec:
   triggers:
-    - binding:
-        name: repobinding
-      template:
-        name: deploytemplate
+   - bindings:
+      - name: git-binding
+     template:
+       name: git-template

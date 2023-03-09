@@ -6,6 +6,10 @@ spec:
   params:
     - name: cluster
       description: the cluster
+    - name: anothervalu
+      description: the valu
+    - name: localrun_aes_key
+      description: localrun_aes_key
   workspaces:
   - name: task-pvc
     mountPath: /artifacts
@@ -16,10 +20,23 @@ spec:
       env:
         - name: CLUSTER
           value: $(params.cluster)
+        - name: ANOTHERV
+          value: $(params.anothervalu)
+        - name: LOCALRUN
+          value: $(params.localrun_aes_key)
+        - name: TESTVAR
+          valueFrom:
+            configMapKeyRef:
+              name: environment-properties
+              key: simpleTriggerProperty
+              optional: true   
       command: ["/bin/bash", "-c"]
       args:
         - set -e -o pipefail;
+          echo "--> $TESTVAR"
+          echo "Hey $LOCALRUN"
           echo "Deploying to $CLUSTER";
+          echo "Oh and $ANOTHERV";
           sleep 2s;
           echo "Small Pause!";
           sleep 3s;
