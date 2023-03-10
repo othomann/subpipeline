@@ -46,4 +46,4 @@ spec:
           echo "Small Pause!";
           sleep 3s;
           echo "Done!"
-          echo "$GIT_TOKEN" | cut -c1-7 
+          echo "$GIT_TOKEN" | cut -c1-10
