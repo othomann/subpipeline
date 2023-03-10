@@ -37,13 +37,15 @@ spec:
               key: git_token
       command: ["/bin/bash", "-c"]
       args:
-        - set -e -o pipefail;
+        - |
+          set -e -o pipefail
           echo "--> $TESTVAR"
           echo "Hey $LOCALRUN"
-          echo "Deploying to $CLUSTER";
-          echo "Oh and $ANOTHERV";
-          sleep 2s;
-          echo "Small Pause!";
-          sleep 3s;
+          echo "Deploying to $CLUSTER"
+          echo "Oh and $ANOTHERV"
+          sleep 2s
+          echo "Small Pause!"
+          sleep 3s
           echo "Done!"
-          echo "$GIT_TOKEN" | cut -c1-10
+          echo ""
+          echo "token: $GIT_TOKEN" | cut -c1-15
