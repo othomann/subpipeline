@@ -13,7 +13,7 @@ resources:
   - deploy-binding.yaml
 # external secrets
   - briantesterhvsecret.yaml
-  - briantesterhvstore.yaml
+  - briantesterhvsecret2.yaml  
 configMapGenerator:
   - name: deploy-trigger-envprops
     envs:
