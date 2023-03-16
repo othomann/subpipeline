@@ -11,9 +11,6 @@ generatorOptions:
 resources:
   - deploy-listener-custom.yaml
   - deploy-binding.yaml
-# external secrets
-  - briantesterhvsecret.yaml
-  - briantesterhvsecret2.yaml  
 configMapGenerator:
   - name: deploy-trigger-envprops
     envs:
