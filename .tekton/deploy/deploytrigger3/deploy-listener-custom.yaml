@@ -1,0 +1,12 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: deploy-listener-custom3
+spec:
+  triggers:
+    - bindings:
+        - name: repobinding
+        - name: trigpropbinding
+      template:
+        name: deploytemplate
