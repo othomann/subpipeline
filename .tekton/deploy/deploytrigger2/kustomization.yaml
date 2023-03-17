@@ -9,9 +9,6 @@ commonLabels:
 generatorOptions:
   disableNameSuffixHash: true
 resources:
-  - deploy-listener-custom.yaml
-  - deploy-binding.yaml
-# external secrets
   - briantesterhvsecret.yaml
 configMapGenerator:
   - name: deploy-trigger-envprops

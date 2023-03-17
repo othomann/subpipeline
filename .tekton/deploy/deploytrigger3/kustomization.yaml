@@ -8,9 +8,6 @@ commonLabels:
   devops.cloud.ibm.com/cd: kustomize
 generatorOptions:
   disableNameSuffixHash: true
-resources:
-  - deploy-listener-custom.yaml
-  - deploy-binding.yaml
 configMapGenerator:
   - name: deploy-trigger-envprops
     envs:
