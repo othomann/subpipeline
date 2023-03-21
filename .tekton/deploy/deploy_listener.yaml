@@ -8,6 +8,12 @@ spec:
       description: the cluster
     - name: localrun_aes
       description: local key
+  resources:
+    inputs:
+      - name: cluster
+        type: cluster
+        description: "(Optional) The cluster used for Docker build"
+        optional: true
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
