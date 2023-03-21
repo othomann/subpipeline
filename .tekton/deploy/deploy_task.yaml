@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: deploy-with-kubectl
+  name: deploy-with-kubectl3
 spec:
   params:
     - name: cluster
