@@ -14,6 +14,11 @@ spec:
         type: cluster
         description: "(Optional) The cluster used for Docker build"
         optional: true
+    outputs:
+      - name: built-image
+        type: image
+        description: "(Optional) The image to build"
+        optional: true
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
