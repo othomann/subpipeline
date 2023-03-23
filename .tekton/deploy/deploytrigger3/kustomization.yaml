@@ -8,7 +8,6 @@ commonLabels:
   devops.cloud.ibm.com/cd: kustomize
 generatorOptions:
   disableNameSuffixHash: true
-resources: []
 configMapGenerator:
   - name: deploy-trigger-envprops
     envs:
