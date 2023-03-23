@@ -1,18 +1,29 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: deploy-with-kubectl
+  name: deploy-with-kubectl2
 spec:
   params:
     - name: cluster
       description: the cluster
     - name: anothervalu
-      description: the valu
+      description: the value
     - name: localrun_aes_key
       description: localrun_aes_key
   workspaces:
   - name: task-pvc
     mountPath: /artifacts
+  resources:
+    inputs:
+      - name: cluster
+        type: cluster
+        description: "(Optional) The cluster used for Docker build"
+        optional: true
+    outputs:
+      - name: built-image
+        type: image
+        description: "(Optional) The image to build"
+        optional: true    
   steps:
     - name: deploy
       image: thebog/privatebog:alpine
