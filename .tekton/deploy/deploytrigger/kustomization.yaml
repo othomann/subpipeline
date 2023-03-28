@@ -10,7 +10,7 @@ generatorOptions:
   disableNameSuffixHash: true
 resources:
   - briantesterhvsecret.yaml
-  - briantesterhvsecret2.yaml  
+  - briantesterhvsecret2.yaml
 configMapGenerator:
   - name: deploy-trigger-envprops
     envs:
