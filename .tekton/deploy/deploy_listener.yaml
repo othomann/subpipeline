@@ -6,6 +6,8 @@ spec:
   params:
     - name: cluster
       description: the cluster
+    - name: test
+      description: the test
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -41,6 +43,8 @@ spec:
   params:
     - name: cluster
       value: "bog-cluster"
+    - name: test
+      value: 1
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
