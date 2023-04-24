@@ -15,6 +15,8 @@ spec:
       params:
         - name: cluster
           value: $(params.cluster)
+        - name: memory
+          value: 0.5G
       workspaces:
       - name: task-pvc
         workspace: pipeline-pvc  

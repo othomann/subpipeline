@@ -6,6 +6,7 @@ spec:
   params:
     - name: cluster
       description: the cluster
+    - name: memory
   workspaces:
   - name: task-pvc
     mountPath: /artifacts
