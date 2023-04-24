@@ -6,6 +6,9 @@ spec:
   params:
     - name: cluster
       description: the cluster to deploy to
+    - name: memory
+      description: total memory of the Code Engine application
+      default: 0.5G      
   workspaces:
   - name: pipeline-pvc
   tasks:  
@@ -15,8 +18,6 @@ spec:
       params:
         - name: cluster
           value: $(params.cluster)
-        - name: memory
-          value: 0.5G
       workspaces:
       - name: task-pvc
         workspace: pipeline-pvc  
