@@ -97,16 +97,16 @@ spec:
       description: A workspace
       mountPath: /artifacts
   steps:
-  - name: deploy-re-wth-1
+  -	name: deploy-re-wth-1
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -185,25 +185,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-2
+  -	name: deploy-re-wth-2
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -282,25 +282,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-3
+  -	name: deploy-re-wth-3
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -379,25 +379,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-4
+  -	name: deploy-re-wth-4
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -476,25 +476,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-5
+  -	name: deploy-re-wth-5
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -573,25 +573,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-6
+  -	name: deploy-re-wth-6
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -670,25 +670,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-7
+  -	name: deploy-re-wth-7
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -767,25 +767,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-8
+  -	name: deploy-re-wth-8
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -864,25 +864,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-9
+  -	name: deploy-re-wth-9
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -961,25 +961,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-10
+  -	name: deploy-re-wth-10
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -1058,25 +1058,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-11
+  -	name: deploy-re-wth-11
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -1155,25 +1155,25 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
 
-  - name: deploy-re-wth-12
+  -	name: deploy-re-wth-12
     image: $(params.task-image)
     workingDir: /artifacts
     env:
-      - name: API_KEY
+      -	name: API_KEY
         valueFrom:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
-      - name: CODE_ENGINE_PROJECT
+      -	name: CODE_ENGINE_PROJECT
         value: $(params.code-engine-project)
     script: |
       #!/bin/bash
@@ -1252,11 +1252,11 @@ spec:
       echo -n "$APPLICATION_URL" >$(results.app-url.path)
 
     volumeMounts:
-      - mountPath: /cd-config
+      -	mountPath: /cd-config
         name: cd-config-volume
-      - mountPath: /steps
+      -	mountPath: /steps
         name: steps-volume
-      - mountPath: /artifacts/_toolchain.json
+      -	mountPath: /artifacts/_toolchain.json
         subPath: toolchain.json
         name: cd-config-volume
 
