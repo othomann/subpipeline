@@ -56,10 +56,10 @@ spec:
         inventory with the toolchain
     - name: insights
       description: The variable storing DevOps Insight integration with the toolchain
-    - name: git-access-token
-      description: Git Access Token for GitLab Access
-    - name: git-inventory-access-token
-      description: Git Access Token for GitLab Inventory Access
+    - name: git-token
+      description: access token for the git repo
+    - name: git-inventory-token
+      description: Git Access Token for Inventory git repo
   resourcetemplates:
 ---
 apiVersion: v1
@@ -136,10 +136,10 @@ spec:
       value: $(params.inventoryRepo)
     - name: insights
       value: $(params.insights)
-    - name: git-access-token
-      value: $(params.git-access-token)
-    - name: git-inventory-access-token
-      value: $(params.git-inventory-access-token)
+    - name: git-token
+      value: $(params.git-token)
+    - name: git-inventory-token
+      value: $(params.git-inventory-token)
   workspaces:
     - name: pipeline-ws
       persistentVolumeClaim:
@@ -332,10 +332,10 @@ spec:
       default: 'true'
     - name: commons-hosted-region
       default: 'https://raw.githubusercontent.com/open-toolchain/commons/master'
-    - name: git-access-token
-      description: Git Access token for git clone
-    - name: git-inventory-access-token
-      description: Git Access token for the git inventory clone
+    - name: git-token
+      description: access token for the git repo
+    - name: git-inventory-token
+      description: Git Access token for Inventory git clone and commit
     - name: inventoryRepo
       description: >-
         The variable storing git integration for the repository storing build
@@ -362,7 +362,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: git-access-token
-          value: $(params.git-access-token)
+          value: $(params.git-token)
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -532,7 +532,7 @@ spec:
         - name: git-credentials-json-file
           value: credentials.json
         - name: git-access-token
-          value: $(params.git-inventory-access-token)
+          value: $(params.git-inventory-token)
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -9283,86 +9283,3 @@ spec:
         else
           exit 1
         fi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: secure-app-b949fdc5-b3f3-4559-aebf-bb4cf39f9a78-pvc
-spec:
-  resources:
-    requests:
-      storage: 5Gi
-  volumeMode: Filesystem
-  accessModes:
-    - ReadWriteOnce
----
-apiVersion: tekton.dev/v1beta1
-kind: PipelineRun
-metadata:
-  name: secure-app-b949fdc5-b3f3-4559-aebf-bb4cf39f9a78
-spec:
-  pipelineRef:
-    name: secure-app-pipeline
-  params:
-    - name: repository
-      value: ''
-    - name: branch
-      value: master
-    - name: revision
-      value: ''
-    - name: app-name
-      value: ''
-    - name: fail-on-lint-errors
-      value: 'true'
-    - name: registry-region
-      value: ''
-    - name: registry-namespace
-      value: ''
-    - name: image-name
-      value: ''
-    - name: path-to-context
-      value: .
-    - name: path-to-dockerfile
-      value: .
-    - name: dockerfile
-      value: Dockerfile
-    - name: build-args
-      value: ''
-    - name: fail-on-scanned-issues
-      value: 'false'
-    - name: deployment-file
-      value: ''
-    - name: keep-ingress-custom-domain
-      value: ''
-    - name: dev-region
-      value: ''
-    - name: dev-resource-group
-      value: ''
-    - name: cluster-name
-      value: ''
-    - name: dev-cluster-namespace
-      value: ''
-    - name: pipeline-debug
-      value: '0'
-    - name: apikey
-      value: ''
-    - name: pr-url
-      value: ''
-    - name: commit-timestamp
-      value: ''
-    - name: scm-type
-      value: ''
-    - name: project-id
-      value: ''
-    - name: inventoryRepo
-      value: ''
-    - name: insights
-      value: ''
-    - name: git-access-token
-      value: ''
-    - name: git-inventory-access-token
-      value: ''
-  workspaces:
-    - name: pipeline-ws
-      persistentVolumeClaim:
-        claimName: secure-app-b949fdc5-b3f3-4559-aebf-bb4cf39f9a78-pvc
