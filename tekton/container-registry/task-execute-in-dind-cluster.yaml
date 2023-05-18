@@ -1,0 +1,444 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: icr-execute-in-dind-cluster
+spec:
+  params:
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: name of the secret containing the continuous delivery pipeline context secrets
+      default: secure-properties
+    - name: container-registry-apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud container registry
+      default: apikey
+    - name: ibmcloud-apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud
+      default: apikey
+    - name: resource-group
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: ""
+    - name: cluster-region
+      description: |
+        (optional) the ibmcloud region hosting the cluster
+        (if value is `` it will default to the toolchain region)
+      default: ""
+    - name: cluster-name
+      description: "name of the docker build cluster - required if no cluster pipeline resource provided to this task"
+      default: ""
+    - name: cluster-namespace
+      description: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed
+      default: "build"
+    #
+    - name: registry-create-namespace
+      description: create container registry namespace if it doesn't already exists
+      default: "true"
+    - name: image-url
+      description: "url of the image to build - required if no image pipeline resource provided to this task"
+      default: ""
+    - name: image-tag
+      description: the default image tag if none is provided using the built-image url
+      default: latest
+    # Dockerfile location
+    - name: path-to-context
+      description: the path to the context that is used for the build (default to `.` meaning current directory)
+      default: .
+    - name: path-to-dockerfile
+      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+      default: .
+    - name: dockerfile
+      description: The name of the Dockerfile
+      default: "Dockerfile"
+    # Docker Client configuration
+    - name: docker-client-image
+      description: The Docker image to use to run the Docker client
+      default: docker
+    # Docker commands
+    - name: docker-commands
+      description: The docker command(s) to run.
+      default: |
+        # Default docker build / inspect / push command
+        docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
+        docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+        docker push ${IMAGE_URL}:${IMAGE_TAG}
+    #
+    - name: check-step-image
+      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+    - name: cluster-setup-step-image
+      description: image to use for the cluster setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+    - name: dind-image
+      description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:19.03.15-dind)
+      default: "icr.io/continuous-delivery/pipeline/docker:19.03.15-dind"
+    - name: properties-file
+      description: file containing properties out of the docker in docker task
+      default: build.properties
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  results:
+    - name: image-repository
+      description: the repository for the built image
+    - name: image-tags
+      description: the tags for the built image
+    - name: image-digest
+      description: the image digest (sha-256 hash) for the built image
+  workspaces:
+    - name: source
+      description: A workspace containing the source (Dockerfile, Docker context) to create the image
+      mountPath: /artifacts
+  resources:
+    outputs:
+      - name: built-image
+        type: image
+        description: "(Optional) The image to build"
+        optional: true
+  stepTemplate:
+    env:
+      - name: WORKSPACE_PATH
+        value: $(workspaces.source.path)
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
+  steps:
+    - name: check-registry
+      image: $(params.check-step-image)
+      workingDir: /steps
+      env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.container-registry-apikey-secret-key)
+        - name: IBMCLOUD_API
+          value: $(params.ibmcloud-api)
+        - name: IBMCLOUD_RESOURCE_GROUP
+          value: $(params.resource-group)
+        - name: REGISTRY_CREATE_NAMESPACE
+          value: $(params.registry-create-namespace)
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          set -e -o pipefail
+          ##########################################################################
+          # Setting HOME explicitly to have ibmcloud plugins available
+          # doing the export rather than env definition is a workaround
+          # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+          export HOME="/root"
+          ##########################################################################
+
+          if [ "$(resources.outputs.built-image.url)" == "" ]; then
+            export IMAGE_RESOURCE_URL="$(params.image-url)"
+          else
+            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
+          fi
+
+          # Parse the image url to find registry information
+          source /scripts/parse_image_url.sh
+
+          # Ensure login to the container registry and namespace available
+          source /scripts/check_registry.sh
+
+          # create a dry-run k8s secret of type docker-registry to obtain
+          # the content of a docker config.json file to access the target
+          # ibmcloud container registry
+          echo "Creating a Kubernetes secret to access the IBM Cloud Container Registry."
+          kubectl create secret --dry-run=true --output=json \
+            docker-registry registry-dockerconfig-secret \
+            --docker-server=${REGISTRY_URL} \
+            --docker-password=${API_KEY} \
+            --docker-username=iamapikey --docker-email=a@b.com | \
+          jq -r '.data[".dockerconfigjson"]' | base64 -d > config.json
+
+          echo ""
+          echo "Secret created."
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+        - mountPath: /scripts
+          name: check-registry-scripts
+    - name: run-docker-commands
+      image: $(params.docker-client-image)
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: PROPERTIES_FILE
+          value: $(params.properties-file)
+        # variabled exposed to docker command
+        - name: PATH_TO_CONTEXT
+          value: $(params.path-to-context)
+        - name: PATH_TO_DOCKERFILE
+          value: $(params.path-to-dockerfile)
+        - name: DOCKERFILE
+          value: $(params.dockerfile)
+        # Docker client configuration
+        # Connect to the sidecar over TCP.
+        - name: DOCKER_HOST
+          value: "tcp://localhost:2375"
+        # The location of the docker client configuration files.
+        - name: DOCKER_CONFIG
+          value: /steps
+        # CD execution context injection
+        - name: PIPELINE_RUN_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tekton.dev/pipelineRun']
+        - name: PIPELINE_RUN_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        - name: PIPELINE_RUN_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+        - name: BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+        - name: PIPELINE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+        - name: TRIGGER_TYPE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-type']
+        - name: TRIGGER_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-name']
+        - name: TRIGGERED_BY
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+
+          if [ "$(resources.outputs.built-image.url)" == "" ]; then
+            export IMAGE_RESOURCE_URL="$(params.image-url)"
+          else
+            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
+          fi
+
+          # Parse the image url to find information (region, namespace, image name and eventually tag)
+          # as url of Image PipelineResource is the complete path to the image, including the registry
+          # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
+          IMAGE_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $1}')
+          IMAGE_TAG=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $2}')
+          if [ -z "$IMAGE_TAG" ]; then
+            IMAGE_TAG="$(params.image-tag)"
+          fi
+          echo "Image URL: $IMAGE_URL"
+          echo "Image tag: $IMAGE_TAG"
+          echo ""
+
+          # run docker command(s) passed as parameter
+          echo "Running docker command(s)..."
+          echo ""
+
+          $(params.docker-commands)
+
+          echo ""
+          # Persist registry and image information in an output properties file
+          REGISTRY_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $1}')
+          REGISTRY_NAMESPACE=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $2}')
+          # Image name is remaining part after the repository and namespace and can contains /
+          IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
+          MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG" \
+            --format='{{index .RepoDigests 0 }}' | awk -F@ '{print $2}')
+
+          if [ "$PROPERTIES_FILE" ]; then
+            # Ensure directory is there
+            mkdir -p $(workspaces.source.path)/$(dirname "$PROPERTIES_FILE")
+            echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_NAME=${IMAGE_NAME}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_TAGS=${IMAGE_TAG}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "$PROPERTIES_FILE content:"
+            cat $(workspaces.source.path)/$PROPERTIES_FILE
+            echo ""
+          fi
+
+          # Record task results
+          echo -n "${IMAGE_URL}" > $(results.image-repository.path)
+          echo -n "${IMAGE_TAG}" > $(results.image-tags.path)
+          echo -n "${MANIFEST_SHA}" > $(results.image-digest.path)
+
+          echo "Done."
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
+        - name: cd-config-volume
+          mountPath: /cd-config
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
+  sidecars:
+    - name: setup-docker-build-cluster
+      image: $(params.cluster-setup-step-image)
+      env:
+        - name: THE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: IBM_CLOUD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.ibmcloud-apikey-secret-key)
+        - name: IBMCLOUD_API
+          value: $(params.ibmcloud-api)
+        - name: IBMCLOUD_TARGET_RESOURCE_GROUP
+          value: $(params.resource-group)
+        - name: IBMCLOUD_TARGET_REGION
+          value: $(params.cluster-region)
+        - name: BUILD_CLUSTER_NAMESPACE
+          value: $(params.cluster-namespace)
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          set -e -o pipefail
+          ##########################################################################
+          # Setting HOME explicitly to have ibmcloud plugins available
+          # doing the export rather than env definition is a workaround
+          # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+          export HOME="/root"
+          ##########################################################################
+
+          # if target region is not specified, used the toolchain region
+          if [ -z "$IBMCLOUD_TARGET_REGION" ]; then
+            IBMCLOUD_TARGET_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
+          fi
+
+          # if target region is in the 'ibm:yp:<region>' format just keep the region part
+          REGION_SUBSET=$(echo "$IBMCLOUD_TARGET_REGION" | awk -F ':' '{print $3;}')
+          if [ -z "$REGION_SUBSET" ]; then
+            echo "IBM Cloud Target Region is $IBMCLOUD_TARGET_REGION"
+          else
+            export IBMCLOUD_TARGET_REGION=$REGION_SUBSET
+            echo "IBM Cloud Target Region is $IBMCLOUD_TARGET_REGION. export IBMCLOUD_TARGET_REGION=$REGION_SUBSET done"
+          fi
+
+          echo "Logging in to build cluster account..."
+          ibmcloud config --check-version false
+          ibmcloud login -a $IBMCLOUD_API --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
+
+          if [ -z "$IBMCLOUD_TARGET_RESOURCE_GROUP" ]; then
+            echo "Using default resource group"
+          else
+            ibmcloud target -g "$IBMCLOUD_TARGET_RESOURCE_GROUP"
+          fi
+
+          echo "Cluster list:"
+          ibmcloud ks clusters
+
+          if [ "$(resources.inputs.cluster.name)" == "" ]; then
+            export BUILD_CLUSTER_NAME="$(params.cluster-name)"
+          else
+            export BUILD_CLUSTER_NAME="$(resources.inputs.cluster.name)"
+          fi
+
+          echo "Running ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME""
+          ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME"
+
+          echo "Checking cluster namespace $BUILD_CLUSTER_NAMESPACE"
+          if ! kubectl get namespace "$BUILD_CLUSTER_NAMESPACE"; then
+            kubectl create namespace "$BUILD_CLUSTER_NAMESPACE"
+          fi
+
+          # Ensure there is a Docker server on the build cluster
+          if ! kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" rollout status -w deployment/docker-dind; then
+            echo "Preparing Docker server deployment"
+            cat > /sidecar-only/docker-dind-deployment.yaml << EOF
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            labels:
+              run: docker
+            name: docker-dind
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                run: docker
+            template:
+              metadata:
+                labels:
+                  run: docker
+              spec:
+                containers:
+                - name: docker
+                  image: $(params.dind-image)
+                  env:
+                  - name: DOCKER_TLS_CERTDIR
+                    value: ''
+                  securityContext:
+                    privileged: true
+          EOF
+            echo "Installing Docker Server into build cluster..."
+            kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" apply -f /sidecar-only/docker-dind-deployment.yaml
+            kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" rollout status -w deployment/docker-dind
+          fi
+
+          # Use port-forward to make the pod/port locally accessible
+          # We need to include the POD IP in the addresses because the readinessProbe will try to open
+          # a socket on <POD_IP>:PORT
+          # Be sure to use a running POD (not an evicted one)
+          kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" get pods
+          kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" port-forward \
+            --address=localhost,${THE_POD_IP} \
+            $(kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" get pods | \
+              grep docker | grep -i running | awk '{print $1;}' \
+             ) \
+            2375:2375
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /sidecar-only
+          name: sidecar-volume
+      # Wait for the port foward to be available
+      readinessProbe:
+        tcpSocket:
+          port: 2375
+        initialDelaySeconds: 3
+        periodSeconds: 3
+        failureThreshold: 10
+  volumes:
+    - name: sidecar-volume
+      emptyDir: {}
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
+    - name: check-registry-scripts
+      configMap:
+        name: check-registry-scripts
+        items:
+          - key: check_registry.sh
+            path: check_registry.sh
+          - key: parse_image_url.sh
+            path: parse_image_url.sh
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

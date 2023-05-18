@@ -1,0 +1,88 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-git-event-processing
+spec:
+  params:
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: revision
+      description: the commit id/sha for the clone action
+      default: ""
+    - name: pr-repository
+      description: The source git repo for the PullRequest
+      default: ""
+    - name: pr-branch
+      description: The source branch for the PullRequest
+      default: ""
+    - name: pr-revision
+      description: the commit id/sha for the PullRequest
+      default: ""
+    - name: git-access-token
+      description: the token to access the git repository for the clone operations
+      default: ""
+    - name: properties-file
+      default: "output/thebuild.properties"
+    - name: git-credentials-json-file
+      default: "output/secrets/thecredentials.json"
+    - name: directory-name
+      default: "."
+    - name: pipeline-debug
+      default: "0"
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: pipeline-git-event-clone-task
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(params.revision)
+        - name: pr-repository
+          value: $(params.pr-repository)
+        - name: pr-branch
+          value: $(params.pr-branch)
+        - name: pr-revision
+          value: $(params.pr-revision)
+        - name: git-access-token
+          value: $(params.git-access-token)
+        - name: directory-name
+          value: "$(params.directory-name)"
+        - name: properties-file
+          value: $(params.properties-file)
+        - name: git-credentials-json-file
+          value: $(params.git-credentials-json-file)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: pipeline-git-event-content-inspect
+      runAfter: [pipeline-git-event-clone-task]
+      taskRef:
+        name: inspect-git-content
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(tasks.pipeline-git-event-clone-task.results.git-repository)
+        - name: directory-name
+          value: $(tasks.pipeline-git-event-clone-task.results.clone-directory)
+        - name: properties-file
+          value: $(params.properties-file)
+        - name: git-credentials-json-file
+          value: $(params.git-credentials-json-file)
+        - name: git-branch
+          value: $(tasks.pipeline-git-event-clone-task.results.git-branch)
+        - name: git-commit
+          value: $(tasks.pipeline-git-event-clone-task.results.git-commit)
+        - name: git-user
+          value: $(tasks.pipeline-git-event-clone-task.results.git-user)

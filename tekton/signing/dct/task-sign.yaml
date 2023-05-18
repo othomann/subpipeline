@@ -1,0 +1,228 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: signing-dct-sign
+  labels:
+    tekton.dev/deprecated: true
+spec:
+  params:
+    - name: image-repository
+      description: the repository of the image to sign
+    - name: image-digest
+      description: the image digest (sha-256 hash) for the image to sign
+    - name: image-tags
+      description: the tags for the image to sign
+    - name: signer
+      description: current signer
+    - name: vault-region
+      description: the region of the keyprotect instance
+    - name: vault-resource-group
+      description: the resource group of the keyprotect instance
+    - name: vault-name
+      description: the key protect instance name
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: name of the secret containing the continuous delivery pipeline context secrets
+      default: secure-properties
+    - name: apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud service
+      default: apikey
+    - name: docker-client-image
+      description: The Docker image to use to run the Docker client
+      default: docker
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"
+  steps:
+    - name: set-sign-context
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
+      env:
+        - name: IBM_CLOUD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.apikey-secret-key)
+        - name: IMAGE_REPOSITORY
+          value: $(params.image-repository)
+        - name: IMAGE_DIGEST
+          value: $(params.image-digest)
+        - name: IMAGE_TAGS
+          value: $(params.image-tags)
+        - name: DEVOPS_SIGNER
+          value: $(params.signer)
+        - name: VAULT_REGION
+          value: $(params.vault-region)
+        - name: VAULT_RESOURCE_GROUP
+          value: $(params.vault-resource-group)
+        - name: VAULT_INSTANCE
+          value: $(params.vault-name)
+        - name: HOME
+          value: /root
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      workingDir: /task
+      script: |
+          #!/bin/bash
+          if [ $PIPELINE_DEBUG == 1 ]; then
+           pwd
+           env
+           trap env EXIT
+           set -x
+          fi
+
+          # if vault region is in the 'ibm:yp:<region>' just keep the region part
+          export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
+
+          ibmcloud config --check-version false
+          ibmcloud login -a $(params.ibmcloud-api) --apikey "$IBM_CLOUD_API_KEY" --no-region
+
+          if [ -z "$VAULT_RESOURCE_GROUP" ]; then
+            echo "Using default resource group"
+          else
+            ibmcloud target -g "$VAULT_RESOURCE_GROUP"
+          fi
+
+          # Split image information in expected environment variables
+          REGISTRY_URL=$(echo $IMAGE_REPOSITORY |  awk -F/ '{print $1}')
+          REGISTRY_NAMESPACE=$(echo $IMAGE_REPOSITORY |  awk -F/ '{print $2}')
+          # Image name is remaining part after the repository and namespace and can contains /
+          IMAGE_NAME=$(echo $IMAGE_REPOSITORY |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
+          IMAGE_TAG=$IMAGE_TAGS
+
+          # create a dry-run k8s secret of type docker-registry to obtain
+          # the content of a docker config.json file to access the target
+          # ibmcloud container registry
+          echo "Creating a Kubernetes secret to access the IBM Cloud Container Registry."
+          kubectl create secret --dry-run=true --output=json \
+            docker-registry registry-dockerconfig-secret \
+            --docker-server=${REGISTRY_URL} \
+            --docker-password=${IBM_CLOUD_API_KEY} \
+            --docker-username=iamapikey --docker-email=a@b.com | \
+          jq -r '.data[".dockerconfigjson"]' | base64 -d > config.json
+
+          # Requires
+          # $VAULT_INSTANCE -name of vault
+          # $VAULT_REGION or default to $IBMCLOUD_TARGET_REGION -region hosting Key Protect Vault instance
+          # $VAULT_RESOURCE_GROUP or default to $IBMCLOUD_TARGET_RESOURCE_GROUP - resourcegroup of the Key Protect Vault Instance
+          # $REGISTRY_URL - url/domain of the registry
+          # $REGISTRY_NAMESPACE -namespace of registry
+          # $IMAGE_NAME
+          # $IMAGE_TAG
+          # $DEVOPS_SIGNER
+          echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
+          export COMMONS_HOSTED_REGION=$(params.commons-hosted-region)
+          source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/signing_utils.sh")
+          # Restore signer pem key
+          VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "${VAULT_REGION:-$IBMCLOUD_TARGET_REGION}" "${VAULT_RESOURCE_GROUP:-$IBMCLOUD_TARGET_RESOURCE_GROUP}")
+          JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
+          signerkey=$(getJSONValue "$DEVOPS_SIGNER" "$JSON_DATA")
+          # Store the information in the task's volume
+          mkdir -p ./trust/private
+          writeFile "$signerkey" ./trust/private
+
+          export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
+
+          # Keep image repository and DCT context for next step
+          echo "REGISTRY_URL=$REGISTRY_URL" > env.properties
+          echo "REGISTRY_NAMESPACE=$REGISTRY_NAMESPACE" >> env.properties
+          echo "IMAGE_NAME=$IMAGE_NAME" >> env.properties
+          echo "DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE" >> env.properties
+      volumeMounts:
+        - mountPath: /certs/client
+          name: dind-certs
+        - mountPath: /task
+          name: task-volume
+    - name: sign-image
+      image: $(params.docker-client-image)
+      workingDir: /task
+      env:
+        - name: IMAGE_REPOSITORY
+          value: $(params.image-repository)
+        - name: IMAGE_DIGEST
+          value: $(params.image-digest)
+        - name: IMAGE_TAGS
+          value: $(params.image-tags)
+        - name: DEVOPS_SIGNER
+          value: $(params.signer)
+        # Docker client configuration
+        # Connect to the sidecar over TCP, with TLS.
+        - name: DOCKER_HOST
+          value: "tcp://localhost:2376"
+        # Verify TLS.
+        - name: DOCKER_TLS_VERIFY
+          value: "1"
+        # Use the certs generated by the sidecar daemon.
+        - name: DOCKER_CERT_PATH
+          value: /certs/client
+        # The location of the client configuration files.
+        - name: DOCKER_CONFIG
+          value: /task
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      script: |
+          #!/bin/sh
+          set -e
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+           pwd
+           env
+           trap env EXIT
+           set -x
+          fi
+
+          # Obtain image registry context from previous step
+          source env.properties
+          export $(cut -d= -f1 env.properties)
+
+          # Configure docker content trust context from previous step
+          export DOCKER_TRUST_DIRECTORY=/task/trust/private
+          export DOCKER_TRUST_HOME=/task/trust
+
+          # Configure DCT server from private registry url
+          export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
+
+          #TODO support multiple signatures
+          IMAGE_TAG=$IMAGE_TAGS
+
+          echo "CHECKING $IMAGE_REPOSITORY:$IMAGE_TAG"
+          docker trust inspect "$IMAGE_REPOSITORY:$IMAGE_TAG"
+
+          # Pull the image w/o Docker Content Trust enabled to prevent failure in pulling non signed image
+          docker pull "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
+
+          # Sign the image
+          export DOCKER_CONTENT_TRUST=1
+          docker trust sign "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
+          docker trust inspect --pretty "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
+      volumeMounts:
+        - mountPath: /certs/client
+          name: dind-certs
+        - mountPath: /task
+          name: task-volume
+  sidecars:
+    - image: docker:dind
+      name: server
+      securityContext:
+        privileged: true
+      env:
+        # Write generated certs to the path shared with the client.
+        - name: DOCKER_TLS_CERTDIR
+          value: /certs
+      volumeMounts:
+        - mountPath: /certs/client
+          name: dind-certs
+      # Wait for the dind daemon to generate the certs it will share with the client.
+      readinessProbe:
+        periodSeconds: 1
+        exec:
+          command: ["ls", "/certs/client/ca.pem"]
+  volumes:
+    - name: dind-certs
+      emptyDir: {}
+    - name: task-volume
+      emptyDir: {}

@@ -1,0 +1,60 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: kubernetes-service-no-resources
+spec:
+  params:
+    - name: cluster-region
+      default: ""
+    - name: resource-group
+    - name: cluster-name
+    - name: pipeline-debug
+      default: "0"
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: pipeline-0-setup-task
+      taskRef:
+        name: iks-fetch-config
+      params:
+        - name: cluster-region
+          value: $(params.cluster-region)
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: cluster-pipeline-resources-directory-fallback
+          value: .tekton-clusters
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: cluster-configuration
+          workspace: pipeline-ws
+    - name: pipeline-1-kubectl-task
+      runAfter: [pipeline-0-setup-task]
+      taskRef:
+        name: iks-contextual-execution
+      params:
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: cluster-pipeline-resources-directory
+          value: .tekton-clusters
+        - name: script
+          value: |
+            env | sort
+            echo "** Here is the kubectl version:"
+            kubectl version
+            echo "** Here is the kubectl cluster-info:"
+            kubectl cluster-info
+            echo "** Here are the kubectl namespaces:"
+            kubectl get namespaces
+            echo "** Here is some Continuous Delivery Tekon Pipeline support configuration properties:"
+            ls -l /cd-config
+            ls -l /cd-config/environment-properties
+            ls -l /cd-config/secure-properties
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: cluster-configuration
+          workspace: pipeline-ws
