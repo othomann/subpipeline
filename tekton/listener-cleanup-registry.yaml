@@ -13,39 +13,11 @@ spec:
       default: us-south
 
   resourcetemplates:
-    # CD context defined as a configmap and secret because it is immutable information
-    - apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: cd-config
-      data:
-        API: $(params.api)
-        REGION: $(params.REGION)
-        OPTIONS: $(params.OPTIONS)
-        REGISTRY_NAMESPACE: $(params.REGISTRY_NAMESPACE)
-
-    - apiVersion: v1
-      kind: Secret
-      metadata:
-        name: cd-secret
-      type: Opaque
-      stringData:
-        API_KEY: $(params.API_KEY)
-
     # k8s resources to be able to pull docker image from a specific container registry
-    - apiVersion: v1
-      kind: Secret
-      metadata:
-        name: private-registry-secret
-      type: kubernetes.io/dockerconfigjson
-      data:
-        .dockerconfigjson: $(params.dockerconfigjson)
     - apiVersion: v1
       kind: ServiceAccount
       metadata:
         name: docker-build-sa
-      imagePullSecrets:
-        - name: private-registry-secret
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
