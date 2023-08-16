@@ -1,0 +1,105 @@
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-build
+spec:
+  params:
+    # CD integration
+    - name: api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: region
+      description: the ibmcloud region containing the toolchain referencing the repository
+      default: us-south
+    - name: source_repo
+    - name: source_branch
+    - name: source_directory
+
+  resourcetemplates:
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: cd-config
+      data:
+        API: $(params.api)
+  
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        API_KEY: $(params.API_KEY)
+
+    # k8s resources to be able to pull docker image from a specific container registry
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: private-registry-secret
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: $(params.dockerconfigjson)    
+    - apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: docker-build-sa
+      imagePullSecrets:
+        - name: private-registry-secret        
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: build-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  15Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        #generateName: $(params.charts_branch)-base-run
+        name: build-$(uid)
+        labels:
+          triggertemplated: "true"
+          generatedBy: "trigger-template-ci"
+      spec:
+        pipelineRef:
+          name: pipeline-build
+        workspaces:
+          - name: pipeline-pvc
+            persistentVolumeClaim:
+              claimName: build-$(uid)-pvc
+        serviceAccountName: docker-build-sa
+        params:
+          - name: source_repo
+            value: $(params.source_repo)
+          - name: source_branch
+            value: $(params.source_branch)
+          - name: source_directory
+            value: $(params.source_directory)     
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: build
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-build
+      template:
+        name: trigger-template-build
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-build
+spec:
+  params:
+    - name: source_repo
+      value: "https://github.com/othomann/simpledocker.git"
+    - name: source_branch
+      value: "main"
+    - name: source_directory
+      value: "simpledocker"
