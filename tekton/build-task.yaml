@@ -82,6 +82,7 @@ spec:
         echo "IMAGE_NAME=${IMAGE_NAME}"
         echo "IMAGE_TAG=${IMAGE_TAG}"
       
+        TIMESTAMP=$(date +%Y%m%d%H%M%Z)
         echo "=========================================================="
         echo "Checking for Dockerfile at the root of ${SOURCE_DIRECTORY}"
         DOCKERFILE=Dockerfile
@@ -98,12 +99,12 @@ spec:
         fi
         echo "=========================================================="
         DOCKER_BUILDKIT=1 docker build -f ${DOCKERFILE} ${EXTRA_DOCKER_OPTS} -t ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} .
-        docker push ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
-        ibmcloud cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
+        docker push ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
+        ibmcloud cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
 
         # Record task results
-        ibmcloud cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} --format "{{ .ID }}" > $(results.APP_IMAGE_DIGEST.path)
-        echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}" > $(results.APP_IMAGE_URL.path)
+        ibmcloud cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} --format "{{ .ID }}" > $(results.APP_IMAGE_DIGEST.path)
+        echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}" > $(results.APP_IMAGE_URL.path)
   sidecars:
     - image: icr.io/continuous-delivery/pipeline/docker:20.10.25-dind
       name: server
