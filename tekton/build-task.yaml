@@ -103,7 +103,12 @@ spec:
         ibmcloud cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
 
         # Record task results
-        DIGEST=$(ibmcloud cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} --format "{{ .ID }}")
+        # DIGEST=$(ibmcloud cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} --format "{{ .ID }}")
+        # echo "DIGEST=${DIGEST}"
+        # echo ${DIGEST} > $(results.APP_IMAGE_DIGEST.path)
+        # echo "IMAGE URL: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
+        # echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}" > $(results.APP_IMAGE_URL.path)
+        DIGEST=$(docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} | jq -r '.[].Digest')
         echo "DIGEST=${DIGEST}"
         echo ${DIGEST} > $(results.APP_IMAGE_DIGEST.path)
         echo "IMAGE URL: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
