@@ -98,7 +98,7 @@ spec:
             echo "Registry namespace ${REGISTRY_NAMESPACE} found."
         fi
         echo "=========================================================="
-        DOCKER_BUILDKIT=1 docker build -f ${DOCKERFILE} ${EXTRA_DOCKER_OPTS} -t ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} .
+        DOCKER_BUILDKIT=1 docker build -f ${DOCKERFILE} ${EXTRA_DOCKER_OPTS} -t ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} .
         docker push ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
         ibmcloud cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
 
