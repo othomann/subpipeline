@@ -6,7 +6,7 @@ spec:
   params:
     - name: source_directory
     - name: registryUrl
-      default: us.icr.io
+      default: ttl.sh
     - name: registryNamespace
       default: olivier_images
     - name: registryRegion
