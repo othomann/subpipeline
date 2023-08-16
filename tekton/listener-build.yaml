@@ -46,7 +46,7 @@ spec:
       imagePullSecrets:
         - name: private-registry-secret
       secrets:
-        -name: private-registry-secret
+        - name: private-registry-secret
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
