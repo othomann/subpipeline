@@ -39,5 +39,5 @@ spec:
         - name: imageTag
           value: "1.0"
       workspaces:
-      - name: output
+      - name: task-pvc
         workspace: pipeline-pvc

@@ -34,7 +34,7 @@ spec:
             name: cd-secret
             key: API_KEY
   workspaces:
-  - name: pipeline-pvc
+  - name: task-pvc
     mountPath: /workspace 
   steps:
   - name: build-base
