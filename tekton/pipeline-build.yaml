@@ -30,6 +30,7 @@ spec:
     - name: build
       taskRef:
         name: build-task
+      runAfter: [clone-source-repo]  
       params:
         - name: source_directory
           value: $(params.source_directory)
