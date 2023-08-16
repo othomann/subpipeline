@@ -69,12 +69,7 @@ spec:
         export HOME=/root
         [ -f /root/.nvm/nvm.sh ] && source /root/.nvm/nvm.sh
         set -e
-        echo "=========================================================="
-        ls -la
-        echo "=========================================================="
         cd "${SOURCE_DIRECTORY}"
-        ls -la
-        echo "=========================================================="
         ibmcloud config --check-version=false
         ibmcloud plugin install -f container-registry
         ibmcloud login -a ${API} -r ${REGISTRY_REGION} --apikey ${API_KEY}
@@ -89,14 +84,7 @@ spec:
       
         echo "=========================================================="
         echo "Checking for Dockerfile at the root of ${SOURCE_DIRECTORY}"
-        DOCKERFILE=docker/Dockerfile.${IMAGE_TAG}${TAG_SUFFIX}
-        if [ -f ${DOCKERFILE} ]; then 
-          echo "Dockerfile found"
-        else
-            echo "Dockerfile not found"
-            exit 1
-        fi
-
+        DOCKERFILE=Dockerfile
         echo "=========================================================="
 
         echo "Checking registry namespace: ${REGISTRY_NAMESPACE}"
