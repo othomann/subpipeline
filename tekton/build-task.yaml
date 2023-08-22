@@ -32,7 +32,7 @@ spec:
         valueFrom:
           secretKeyRef:
             name: cd-secret
-            key: API_KEY
+            key: REGISTRY_API_KEY
   workspaces:
   - name: task-pvc
     mountPath: /workspace 

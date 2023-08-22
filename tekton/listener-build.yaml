@@ -30,6 +30,7 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.API_KEY)
+        REGISTRY_API_KEY: $(params.REGISTRY_API_KEY)
 
     # k8s resources to be able to pull docker image from a specific container registry
     - apiVersion: v1
