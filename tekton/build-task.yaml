@@ -8,7 +8,7 @@ spec:
     - name: registryUrl
       default: "us.icr.io"
     - name: registryNamespace
-      default: olivier_images
+      default: olivier-images
     - name: registryRegion
       default: us-south
     - name: imageName
