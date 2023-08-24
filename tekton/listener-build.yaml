@@ -39,7 +39,7 @@ spec:
         name: private-registry-secret
       type: kubernetes.io/dockerconfigjson
       data:
-        .dockerconfigjson: $(params.dockerconfigjson)    
+        .dockerconfigjson: $(params.dockerconfigjson)
     - apiVersion: v1
       kind: ServiceAccount
       metadata:

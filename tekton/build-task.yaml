@@ -102,6 +102,7 @@ spec:
         docker push ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
 
         # Record task results
+        docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
         DIGEST=$(docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} | jq -r '.[].Digest')
         echo "DIGEST=${DIGEST}"
         echo ${DIGEST} > $(results.APP_IMAGE_DIGEST.path)
