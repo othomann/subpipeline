@@ -103,7 +103,8 @@ spec:
 
         # Record task results
         docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
-        DIGEST=$(docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} | jq -r '.[].Digest')
+        DIGEST=$(docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} |  jq -r '.[].RepoDigests' | jq -r '.[]')
+        DIGEST=$(echo $DIGEST | cut -d '@' -f2)
         echo "DIGEST=${DIGEST}"
         echo ${DIGEST} > $(results.APP_IMAGE_DIGEST.path)
         echo "IMAGE URL: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
