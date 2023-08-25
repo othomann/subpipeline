@@ -41,3 +41,17 @@ spec:
       workspaces:
       - name: task-pvc
         workspace: pipeline-pvc
+    - name: validate
+      taskRef:
+        name: validate-task
+      runAfter: [build-task]  
+      params:
+        - name: source_directory
+          value: $(params.source_directory)
+        - name: imageName
+          value: test
+        - name: imageTag
+          value: "1.0"
+      workspaces:
+      - name: task-pvc
+        workspace: pipeline-pvc        
