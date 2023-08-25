@@ -44,7 +44,7 @@ spec:
     - name: validate
       taskRef:
         name: validate-task
-      runAfter: [build-task]  
+      runAfter: [build]  
       params:
         - name: source_directory
           value: $(params.source_directory)
