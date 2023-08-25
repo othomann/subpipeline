@@ -95,7 +95,7 @@ spec:
         cosign version
         cosign tree ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}
         ATTESTATION_PAYLOAD=$(cosign verify-attestation --key cosign.pub --type slsaprovenance ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME})
-        echo $ATTESTATION_PAYLOAD | jq '.payload | @base64d | fromjson'
+        echo $ATTESTATION_PAYLOAD | jq '.payload | @base64d | fromjson' | jq .
   sidecars:
     - image: docker:23.0.6-dind
       name: server
