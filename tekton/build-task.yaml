@@ -102,7 +102,10 @@ spec:
         docker push ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}
 
         # Record task results
-        DIGEST=$(ic cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME} --format ''{{.ID}}'')
+        # DIGEST=$(ic cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME} --format ''{{.ID}}'')
+        docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}
+        DIGEST=$(docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME} |  jq -r '.[].RepoDigests' | jq -r '.[]')
+        DIGEST=$(echo $DIGEST | cut -d '@' -f2)
         echo "DIGEST=${DIGEST}"
         echo ${DIGEST} > $(results.APP_IMAGE_DIGEST.path)
         echo "IMAGE URL: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
