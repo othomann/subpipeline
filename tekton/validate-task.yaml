@@ -79,6 +79,9 @@ spec:
         echo "REGISTRY_URL=${REGISTRY_URL}"
         echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}"
         echo "IMAGE_NAME=${IMAGE_NAME}"
+
+        echo "List all images"
+        ic cr images --restrict ${REGISTRY_NAMESPACE}
       
         # build the cosign.pub file
         echo $COSIGN | base64 -d > ./cosign.pub
