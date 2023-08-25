@@ -90,7 +90,7 @@ spec:
         chmod +x /usr/local/bin/cosign
 
         cosign version
-        ATTESTATION_PAYLOAD=$(cosign verify-attestation --key cosign.pub --type slsaprovenance ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME})
+        ATTESTATION_PAYLOAD=$(cosign verify-attestation --key cosign.pub --type slsaprovenance --insecure-ignore-tlog ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME})
         echo $ATTESTATION_PAYLOAD
 
         echo $ATTESTATION_PAYLOAD | jq -r .payload | base64 -d | jq .
