@@ -80,9 +80,9 @@ spec:
         echo "REGISTRY_URL=${REGISTRY_URL}"
         echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}"
         echo "IMAGE_NAME=${IMAGE_NAME}"
-        echo "IMAGE_TAG=${IMAGE_TAG}"
+        # echo "IMAGE_TAG=${IMAGE_TAG}"
       
-        TIMESTAMP=$(date +%Y%m%d%H%M%Z)
+        # TIMESTAMP=$(date +%Y%m%d%H%M%Z)
         echo "=========================================================="
         echo "Checking for Dockerfile at the root of ${SOURCE_DIRECTORY}"
         DOCKERFILE=Dockerfile
@@ -98,13 +98,11 @@ spec:
             echo "Registry namespace ${REGISTRY_NAMESPACE} found."
         fi
         echo "=========================================================="
-        DOCKER_BUILDKIT=1 docker build -f ${DOCKERFILE} ${EXTRA_DOCKER_OPTS} -t ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} .
-        docker push ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
+        DOCKER_BUILDKIT=1 docker build -f ${DOCKERFILE} ${EXTRA_DOCKER_OPTS} -t ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME} .
+        docker push ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}
 
         # Record task results
-        docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP}
-        DIGEST=$(docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}-${TIMESTAMP} |  jq -r '.[].RepoDigests' | jq -r '.[]')
-        DIGEST=$(echo $DIGEST | cut -d '@' -f2)
+        DIGEST=$(ic cr image-inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME} --format ''{{.ID}}'')
         echo "DIGEST=${DIGEST}"
         echo ${DIGEST} > $(results.APP_IMAGE_DIGEST.path)
         echo "IMAGE URL: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
