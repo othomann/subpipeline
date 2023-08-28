@@ -83,11 +83,6 @@ spec:
         echo "List all images"
         ic cr images --restrict ${REGISTRY_NAMESPACE}
 
-        sleep 300
-      
-        echo "List all images"
-        ic cr images --restrict ${REGISTRY_NAMESPACE}
-
         # build the cosign.pub file
         echo $COSIGN | base64 -d > ./cosign.pub
         cat cosign.pub
