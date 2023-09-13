@@ -27,7 +27,7 @@ spec:
         valueFrom:
           configMapKeyRef:
             name: cd-config
-            key: API
+            key: REGISTRY_API
       - name: API_KEY
         valueFrom:
           secretKeyRef:
