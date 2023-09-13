@@ -41,6 +41,8 @@ spec:
           value: test
         - name: imageTag
           value: "1.0"
+        - name: registryUrl
+          value: stg.icr.io
       workspaces:
       - name: task-pvc
         workspace: pipeline-pvc
