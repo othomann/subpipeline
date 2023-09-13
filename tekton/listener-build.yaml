@@ -85,6 +85,8 @@ spec:
             value: $(params.source_directory)
           - name: api
             value: $(params.api)
+          - name: registry_url
+            value: $(params.registry_url)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener

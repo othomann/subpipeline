@@ -8,6 +8,7 @@ spec:
     - name: source_branch
     - name: source_directory
     - name: api
+    - name: registry_url
   workspaces:
   - name: pipeline-pvc
   tasks:
@@ -42,7 +43,7 @@ spec:
         - name: imageTag
           value: "1.0"
         - name: registryUrl
-          value: stg.icr.io
+          value: $(params.registry_url)
       workspaces:
       - name: task-pvc
         workspace: pipeline-pvc
