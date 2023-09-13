@@ -17,11 +17,6 @@ spec:
       default: '--no-cache'
   stepTemplate:
     env:
-      - name: COSIGN
-        valueFrom:
-          configMapKeyRef:
-            name: cd-config
-            key: COSIGN
       - name: API
         valueFrom:
           configMapKeyRef:
@@ -84,7 +79,8 @@ spec:
         ic cr images --restrict ${REGISTRY_NAMESPACE}
 
         # build the cosign.pub file
-        echo $COSIGN | base64 -d > ./cosign.pub
+        curl --silent "https://private-worker-service.us-south.devops.dev.cloud.ibm.com/chains/public_key" > ./cosign.pub
+        echo "public key:"
         cat cosign.pub
 
         # install cosign
