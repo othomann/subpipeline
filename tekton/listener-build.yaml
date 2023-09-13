@@ -82,7 +82,9 @@ spec:
           - name: source_branch
             value: $(params.source_branch)
           - name: source_directory
-            value: $(params.source_directory)     
+            value: $(params.source_directory)
+          - name: api
+            value: $(params.api)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener

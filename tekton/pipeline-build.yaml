@@ -7,6 +7,7 @@ spec:
     - name: source_repo
     - name: source_branch
     - name: source_directory
+    - name: api
   workspaces:
   - name: pipeline-pvc
   tasks:
@@ -24,6 +25,8 @@ spec:
           value: cd-secret
         - name: ibmcloud-apikey-secret-key
           value: API_KEY
+        - name: ibmcloud-api
+          value: $(params.api)
       workspaces:
       - name: output
         workspace: pipeline-pvc  
