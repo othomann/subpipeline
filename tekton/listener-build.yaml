@@ -46,8 +46,6 @@ spec:
       kind: ServiceAccount
       metadata:
         name: docker-build-sa
-      imagePullSecrets:
-        - name: private-registry-secret
       secrets:
         - name: private-registry-secret
     - apiVersion: v1
@@ -64,7 +62,6 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        #generateName: $(params.charts_branch)-base-run
         name: build-$(uid)
         labels:
           triggertemplated: "true"
