@@ -35,13 +35,13 @@ spec:
         REGISTRY_API_KEY: $(params.REGISTRY_API_KEY)
 
     # k8s resources to be able to pull docker image from a specific container registry
-    # - apiVersion: v1
-    #   kind: Secret
-    #   metadata:
-    #     name: private-registry-secret
-    #   type: kubernetes.io/dockerconfigjson
-    #   data:
-    #     .dockerconfigjson: $(params.dockerconfigjson)
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: private-registry-secret
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: $(params.dockerconfigjson)
     # - apiVersion: v1
     #   kind: ServiceAccount
     #   metadata:
