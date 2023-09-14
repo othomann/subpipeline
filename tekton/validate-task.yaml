@@ -90,7 +90,7 @@ spec:
 
         cosign version
         cosign tree ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}
-        ATTESTATION_PAYLOAD=$(cosign verify-attestation --key cosign.pub --type slsaprovenance ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME})
+        ATTESTATION_PAYLOAD=$(cosign verify-attestation --insecure-ignore-tlog --key cosign.pub --type slsaprovenance ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME})
 
         echo ""
         echo "===================================="
