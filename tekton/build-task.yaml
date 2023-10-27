@@ -111,7 +111,7 @@ spec:
         echo "IMAGE URL: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
         echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}" > $(results.APP_IMAGE_URL.path)
   sidecars:
-    - image: icr.io/continuous-delivery/base-images/multiarch-dind:v1.1.0
+    - image: icr.io/continuous-delivery/base-images/multiarch-dind:v1.0.0
       name: server
       securityContext:
         privileged: true
