@@ -63,7 +63,6 @@ spec:
         export HOME=/root
         [ -f /root/.nvm/nvm.sh ] && source /root/.nvm/nvm.sh
         set -e
-        sleep 600
         cd "${SOURCE_DIRECTORY}"
         ibmcloud config --check-version=false
         ibmcloud plugin update --all -f
