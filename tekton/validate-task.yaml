@@ -101,8 +101,8 @@ spec:
         echo "Signature:"
         cosign download signature ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME} | jq -r '.Payload' | base64 -d | jq .
   sidecars:
-    - image: icr.io/continuous-delivery/base-images/multiarch-dind:v1.0.0
-#    - image: docker:23.0.6-dind
+#    - image: icr.io/continuous-delivery/base-images/multiarch-dind:v1.0.0
+    - image: docker:23.0.6-dind
       name: server
       securityContext:
         privileged: true
