@@ -79,7 +79,7 @@ spec:
         ic cr images --restrict ${REGISTRY_NAMESPACE}
 
         # build the cosign.pub file
-        curl --silent "https://private-worker-service.mon01.devops.dev.cloud.ibm.com/chains/public_key" > ./cosign.pub
+        curl --silent "https://private-worker-service.mon01.devops.cloud.ibm.com/chains/public_key" > ./cosign.pub
         echo "public key:"
         cat cosign.pub
 
