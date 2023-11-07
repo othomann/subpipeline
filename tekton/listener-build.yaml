@@ -5,12 +5,6 @@ metadata:
 spec:
   params:
     # CD integration
-    - name: api
-      description: the ibmcloud api
-      default: https://cloud.ibm.com
-    - name: region
-      description: the ibmcloud region containing the toolchain referencing the repository
-      default: us-south
     - name: source_repo
     - name: source_branch
     - name: source_directory
@@ -23,7 +17,7 @@ spec:
       data:
         API: $(params.api)
         REGISTRY_API: $(params.registry_api)
-        COSIGN: $(params.COSIGN)
+        REGION: $(params.REGION)
   
     - apiVersion: v1
       kind: Secret

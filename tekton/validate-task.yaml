@@ -21,7 +21,12 @@ spec:
         valueFrom:
           configMapKeyRef:
             name: cd-config
-            key: REGISTRY_API            
+            key: REGISTRY_API
+      - name: REGION
+        valueFrom:
+          configMapKeyRef:
+            name: cd-config
+            key: REGION
       - name: API_KEY
         valueFrom:
           secretKeyRef:
@@ -79,7 +84,7 @@ spec:
         ic cr images --restrict ${REGISTRY_NAMESPACE}
 
         # build the cosign.pub file
-        curl --silent "https://private-worker-service.mon01.devops.cloud.ibm.com/chains/public_key" > ./cosign.pub
+        curl --silent "https://private-worker-service.${REGION}.devops.cloud.ibm.com/chains/public_key" > ./cosign.pub
         echo "public key:"
         cat cosign.pub
 
