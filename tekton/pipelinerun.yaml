@@ -6,9 +6,9 @@ spec:
   pipelineRef:
     name: pipeline-build
   taskRunSpecs:
-    - pipelineTaskName: build
-      imagePullSecrets:
-      - name: private-registry-secret
-    - pipelineTaskName: validate
-      imagePullSecrets:
-      - name: private-registry-secret      
+  - pipelineTaskName: build
+    imagePullSecrets:
+    - name: private-registry-secret
+  - pipelineTaskName: validate
+    imagePullSecrets:
+    - name: private-registry-secret
