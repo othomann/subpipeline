@@ -79,6 +79,9 @@ spec:
             value: $(params.api)
           - name: registry_url
             value: $(params.registry_url)
+        podTemplate:
+          imagePullSecrets:
+            - name: private-registry-secret
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
