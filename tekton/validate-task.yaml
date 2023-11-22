@@ -37,7 +37,7 @@ spec:
     mountPath: /workspace
   steps:
   - name: validate
-    image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.45
+    image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.46
     imagePullPolicy: IfNotPresent
     env:
       - name: HOME
