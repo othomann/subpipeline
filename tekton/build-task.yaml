@@ -110,7 +110,7 @@ spec:
         # echo ${DIGEST} > $(results.APP_IMAGE_DIGEST.path)
         # echo "IMAGE URL: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
         # echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}" > $(results.APP_IMAGE_URL.path)
-        echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}@sha256:${DIGEST}" | tee $(results.IMAGES.path)
+        echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}@${DIGEST}" | tee $(results.IMAGES.path)
   sidecars:
     - image: icr.io/continuous-delivery/base-images/multiarch-dind:v1.2.0
       name: server
