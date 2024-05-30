@@ -41,7 +41,7 @@ spec:
       metadata:
         name: docker-build-sa
       secrets:
-        - name: private-registry-secret
+        - name: private-registry-secret        
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
@@ -67,7 +67,7 @@ spec:
           - name: pipeline-pvc
             persistentVolumeClaim:
               claimName: build-$(uid)-pvc
-        # serviceAccountName: docker-build-sa
+        serviceAccountName: docker-build-sa
         params:
           - name: source_repo
             value: $(params.source_repo)
