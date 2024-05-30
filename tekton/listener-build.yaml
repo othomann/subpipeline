@@ -68,6 +68,7 @@ spec:
             persistentVolumeClaim:
               claimName: build-$(uid)-pvc
         serviceAccountName: docker-build-sa
+        serviceAccount: docker-build-sa
         params:
           - name: source_repo
             value: $(params.source_repo)
@@ -79,9 +80,6 @@ spec:
             value: $(params.api)
           - name: registry_url
             value: $(params.registry_url)
-        podTemplate:
-          imagePullSecrets:
-            - name: private-registry-secret
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
