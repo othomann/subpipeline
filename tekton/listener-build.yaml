@@ -36,12 +36,12 @@ spec:
       type: kubernetes.io/dockerconfigjson
       data:
         .dockerconfigjson: $(params.dockerconfigjson)
-    # - apiVersion: v1
-    #   kind: ServiceAccount
-    #   metadata:
-    #     name: docker-build-sa
-      # secrets:
-      #   - name: private-registry-secret
+    - apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: docker-build-sa
+      secrets:
+        - name: private-registry-secret
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
