@@ -16,10 +16,10 @@ spec:
     - name: extraDockerOpts
       default: '--no-cache'
   results:
-    - name: IMAGES
-      description: All built images
-    # - name: APP_IMAGE_URL
-    #   description: The url of the built image
+    - name: APP_IMAGE_DIGEST
+      description: The digest of the built image
+    - name: APP_IMAGE_URL
+      description: The url of the built image
 
   stepTemplate:
     env:
@@ -38,7 +38,7 @@ spec:
     mountPath: /workspace 
   steps:
   - name: build-base
-    image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.46
+    image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.56
     imagePullPolicy: IfNotPresent
     env:
       - name: HOME
@@ -106,11 +106,10 @@ spec:
         docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}
         DIGEST=$(docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME} |  jq -r '.[].RepoDigests' | jq -r '.[]')
         DIGEST=$(echo $DIGEST | cut -d '@' -f2)
-        # echo "DIGEST=${DIGEST}"
-        # echo ${DIGEST} > $(results.APP_IMAGE_DIGEST.path)
-        # echo "IMAGE URL: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
-        # echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}" > $(results.APP_IMAGE_URL.path)
-        echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}@${DIGEST}" | tee $(results.IMAGES.path)
+        echo "DIGEST=${DIGEST}"
+        echo ${DIGEST} > $(results.APP_IMAGE_DIGEST.path)
+        echo "IMAGE URL: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
+        echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}" > $(results.APP_IMAGE_URL.path)
   sidecars:
     - image: icr.io/continuous-delivery/base-images/multiarch-dind:v1.3.0
       name: server
