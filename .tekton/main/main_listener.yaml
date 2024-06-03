@@ -4,10 +4,8 @@ metadata:
   name: template
 spec:
   params:
-    - name: repository
-      description: The git repo
-    - name: revision
-      description: the branch for the git repo
+    - name: image_url
+      description: The image_url
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -32,29 +30,45 @@ spec:
             persistentVolumeClaim:
               claimName: pipelinerun-$(uid)-pvc
         params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.revision)
+        - name: image_url
+          value: $(params.image_url)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: binding
+  name: bindingvbi2
 spec:
   params:
-    - name: repository
-      value: "https://github.com/open-toolchain/hello-tekton"
-    - name: revision
-      value: "master"
+    - name: image_url
+      value: "icr.io/continuous-delivery/pipeline/pipeline-base-image:2"
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: bindingvbi3
+spec:
+  params:
+    - name: image_url
+      value: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3"
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: main-listener
+  name: vbi2-listener
 spec:
   triggers:
     - binding:
-        name: binding
+        name: bindingvbi2
+      template:
+        name: template
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: vbi3-listener
+spec:
+  triggers:
+    - binding:
+        name: bindingvbi3
       template:
         name: template
