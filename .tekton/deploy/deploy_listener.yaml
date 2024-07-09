@@ -30,7 +30,7 @@ spec:
         taskRunSpecs:
           - pipelineTaskName: deploy-with-kubectl
             podTemplate:
-              runtimeClassName: large            
+              runtimeClassName: kata-large            
         workspaces:
           - name: pipeline-pvc
             persistentVolumeClaim:
