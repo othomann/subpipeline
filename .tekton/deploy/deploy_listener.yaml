@@ -27,6 +27,10 @@ spec:
       spec:
         pipelineRef:
             name: deploy-pipeline
+        taskRunSpecs:
+          - pipelineTaskName: deploy
+            podTemplate:
+              runtimeClassName: large            
         workspaces:
           - name: pipeline-pvc
             persistentVolumeClaim:
