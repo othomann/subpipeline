@@ -26,11 +26,7 @@ spec:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
-            name: deploy-pipeline
-        taskRunSpecs:
-          - pipelineTaskName: deploy-with-kubectl
-            podTemplate:
-              runtimeClassName: kata-large            
+            name: deploy-pipeline   
         workspaces:
           - name: pipeline-pvc
             persistentVolumeClaim:
