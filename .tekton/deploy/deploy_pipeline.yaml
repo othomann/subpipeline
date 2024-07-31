@@ -21,7 +21,7 @@ spec:
       workspaces:
       - name: task-pvc
         workspace: pipeline-pvc
-    - name: run-kuebctl
+    - name: run-kubectl
       taskRef:
         name: deploy-with-kubectl
       params:
