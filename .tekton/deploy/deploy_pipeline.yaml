@@ -20,5 +20,14 @@ spec:
           value: $(params.cluster)
       workspaces:
       - name: task-pvc
+        workspace: pipeline-pvc
+    - name: run-kuebctl
+      taskRef:
+        name: deploy-with-kubectl
+      params:
+        - name: cluster
+          value: $(params.cluster)
+      workspaces:
+      - name: task-pvc
         workspace: pipeline-pvc  
 
