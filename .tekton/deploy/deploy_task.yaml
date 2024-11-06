@@ -28,5 +28,5 @@ spec:
           echo "Round $i";
           ls;
           sleep 5s;
-          done
-          sleep 3610s;
+          done;
+          sleep 3610s
