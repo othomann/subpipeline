@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-task
+  annotations:
+    io.kubernetes.cri.untrusted-workload: "false"
+spec:
+  params:
+    - name: repository
+      description: the git repo
+    - name: revision
+      description: the revision
+      default: master
+  steps:
+    - name: clone-repo
+      image: alpine/git
+      env:
+        - name: REPOSITORY
+          value: $(params.repository)
+        - name: REVISION
+          value: $(params.revision)
+      command: ["/bin/sh", "-c"]
+      args:
+        - set -e -o pipefail;
+          echo "Cloning $REPOSITORY";
+          sleep 30s;
+  sidecars:
+  - image: busybox
+    name: hello-sidecar
+    script: |
+            echo 'Hello from sidecar!'
