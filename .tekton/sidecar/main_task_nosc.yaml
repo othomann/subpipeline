@@ -15,7 +15,7 @@ spec:
   volumes:
     - name: ovpn
       secret:
-        secretName: cd-secret
+        secretName: secure-properties
   steps:
     - name: connectcluster
       image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.61
