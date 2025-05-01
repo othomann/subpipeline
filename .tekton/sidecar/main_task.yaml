@@ -11,6 +11,13 @@ spec:
     - name: revision
       description: the revision
       default: master
+  stepTemplate:
+    env:
+      - name: THUNDERDOME_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: secure-properties
+            key: THUNDERDOME_API_KEY
   volumes:
     - name: ovpn
       secret:
@@ -21,6 +28,11 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - set -e -o pipefail;
+          bx login --apikey ${THUNDERDOME_API_KEY};
+          bx cs clusters;
+          bx cs cluster config --cluster airgapped-poc;
+          kubectl get ns;
+          kubectl get pods;
           sleep 5m;  
   sidecars:
   - image: dperson/openvpn-client
