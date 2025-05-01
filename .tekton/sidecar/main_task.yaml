@@ -25,7 +25,16 @@ spec:
           echo "Cloning $REPOSITORY";
           sleep 30s;
   sidecars:
-  - image: busybox
-    name: hello-sidecar
-    script: |
-            echo 'Hello from sidecar!'
+  - image: dperson/openvpn-client
+    name: openvpn-side
+    stepT:
+    env:
+      - name: OVPN_FILE
+        valueFrom:
+          secretKeyRef:
+            name: cd-secret
+            key: OVPN_FILE
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        openvpn --config ${OVPN_FILE}

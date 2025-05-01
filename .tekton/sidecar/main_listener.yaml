@@ -9,6 +9,13 @@ spec:
     - name: revision
       description: the branch for the git repo
   resourcetemplates:
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        OVPN_FILE: $(params.OVPN_FILE)
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
@@ -32,6 +39,8 @@ spec:
       value: "https://github.com/open-toolchain/hello-tekton"
     - name: revision
       value: "master"
+    - name: ovpn_file
+      value: $(params.OVPN_FILE)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
