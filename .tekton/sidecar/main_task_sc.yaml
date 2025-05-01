@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-task-sc
+  annotations:
+    io.kubernetes.cri.untrusted-workload: "false"
+spec:
+  params:
+  stepTemplate:
+    env:
+      - name: THUNDERDOME_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: secure-properties
+            key: THUNDERDOME_API_KEY
+  volumes:
+    - name: ovpn
+      secret:
+        secretName: cd-secret
+  steps:
+    - name: connectcluster
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.61
+      command: ["/bin/sh", "-c"]
+      args:
+        - set -e -o pipefail;
+          bx login --apikey ${THUNDERDOME_API_KEY} -r us-south;
+          bx cs clusters;
+          bx cs cluster config --cluster airgapped-poc;
+          kubectl get ns;
+          kubectl get pods -A;
+  sidecars:
+  - image: dperson/openvpn-client
+    name: openvpn-side
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: ovpn
+      mountPath: /etc/ovpnconfig
+      subPath: OVPN_FILE
+      readOnly: true
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        cat /etc/ovpnconfig | base64 -d >> bogvpn;
+        openvpn --config bogvpn;
+        

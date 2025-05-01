@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: build-task
+  name: build-task-nosc
   annotations:
     io.kubernetes.cri.untrusted-workload: "false"
 spec:
@@ -32,21 +32,5 @@ spec:
           bx cs clusters;
           bx cs cluster config --cluster airgapped-poc;
           kubectl get ns;
-          kubectl get pods;
-          sleep 5m;  
-  sidecars:
-  - image: dperson/openvpn-client
-    name: openvpn-side
-    securityContext:
-      privileged: true
-    volumeMounts:
-    - name: ovpn
-      mountPath: /etc/ovpnconfig
-      subPath: OVPN_FILE
-      readOnly: true
-    command: ["/bin/bash", "-c"]
-    args:
-      - |
-        cat /etc/ovpnconfig | base64 -d >> bogvpn;
-        openvpn --config bogvpn;
+          kubectl get pods -A;
         
