@@ -41,5 +41,6 @@ spec:
     command: ["/bin/bash", "-c"]
     args:
       - |
-        sleep 5m;
+        cat /etc/ovpnconfig | base64 -d >> bogvpn;
+        openvpn --config bogvpn;
         
