@@ -3,11 +3,6 @@ kind: Pipeline
 metadata:
   name: main-pipeline
 spec:
-  params:
-    - name: repository
-      description: the git repo
-    - name: revision
-      description: the branch for the git repo
   tasks:  
     - name: build-task-nosc
       taskRef:
