@@ -16,18 +16,12 @@ spec:
       secret:
         secretName: cd-secret
   steps:
-    - name: clone-repo
-      image: alpine/git
-      env:
-        - name: REPOSITORY
-          value: $(params.repository)
-        - name: REVISION
-          value: $(params.revision)
+    - name: connectcluster
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.61
       command: ["/bin/sh", "-c"]
       args:
         - set -e -o pipefail;
-          echo "Cloning $REPOSITORY";
-          sleep 5m;
+          sleep 5m;  
   sidecars:
   - image: dperson/openvpn-client
     name: openvpn-side
