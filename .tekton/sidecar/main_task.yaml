@@ -28,7 +28,7 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - set -e -o pipefail;
-          bx login --apikey ${THUNDERDOME_API_KEY};
+          bx login --apikey ${THUNDERDOME_API_KEY} -r us-south;
           bx cs clusters;
           bx cs cluster config --cluster airgapped-poc;
           kubectl get ns;
