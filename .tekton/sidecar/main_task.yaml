@@ -31,6 +31,8 @@ spec:
   sidecars:
   - image: dperson/openvpn-client
     name: openvpn-side
+    securityContext:
+      privileged: true
     volumeMounts:
     - name: ovpn
       mountPath: /etc/ovpnconfig
