@@ -11,6 +11,10 @@ spec:
     - name: revision
       description: the revision
       default: master
+  volumes:
+    - name: ovpn
+      secret:
+        secretName: cd-secret
   steps:
     - name: clone-repo
       image: alpine/git
@@ -27,10 +31,6 @@ spec:
   sidecars:
   - image: dperson/openvpn-client
     name: openvpn-side
-    volumes:
-    - name: ovpn
-      secret:
-        secretName: cd-secret
     volumeMounts:
     - name: ovpn
       mountPath: /etc/ovpnconfig
