@@ -39,4 +39,5 @@ spec:
     command: ["/bin/bash", "-c"]
     args:
       - |
-        openvpn --config /etc/ovpnconfig
+        sleep 5m;
+        
