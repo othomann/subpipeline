@@ -23,7 +23,7 @@ spec:
       args:
         - set -e -o pipefail;
           echo "Cloning $REPOSITORY";
-          sleep 30s;
+          sleep 5m;
   sidecars:
   - image: dperson/openvpn-client
     name: openvpn-side
