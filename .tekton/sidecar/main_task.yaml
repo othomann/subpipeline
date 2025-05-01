@@ -27,14 +27,16 @@ spec:
   sidecars:
   - image: dperson/openvpn-client
     name: openvpn-side
-    stepT:
-    env:
-      - name: OVPN_FILE
-        valueFrom:
-          secretKeyRef:
-            name: cd-secret
-            key: OVPN_FILE
+    volumes:
+    - name: ovpn
+      secret:
+        secretName: cd-secret
+    volumeMounts:
+    - name: ovpn
+      mountPath: /etc/ovpnconfig
+      subPath: OVPN_FILE
+      readOnly: true
     command: ["/bin/bash", "-c"]
     args:
       - |
-        openvpn --config ${OVPN_FILE}
+        openvpn --config /etc/ovpnconfig
