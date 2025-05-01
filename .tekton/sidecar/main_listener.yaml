@@ -3,11 +3,6 @@ kind: TriggerTemplate
 metadata:
   name: template
 spec:
-  params:
-    - name: repository
-      description: The git repo
-    - name: revision
-      description: the branch for the git repo
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
