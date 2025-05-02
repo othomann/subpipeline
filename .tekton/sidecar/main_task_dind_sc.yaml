@@ -34,8 +34,6 @@ spec:
           bx login --apikey ${THUNDERDOME_API_KEY} -r us-south;
           bx cs clusters;
           bx cs cluster config --cluster airgapped-poc;
-          kubectl get ns;
-          kubectl get pods -A;
           sleep 5m;
   sidecars:
   - image: docker:24-dind
@@ -47,7 +45,7 @@ spec:
       name: docker-storage
     - mountPath: /var/run/
       name: docker-socket
-    command: ["/bin/bash", "-c"]
+    command: ["sh", "-c"]
     args:
       - |
         dockerd-entrypoint.sh --mtu=1400 -H unix:///var/run/docker.sock;
