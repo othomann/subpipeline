@@ -41,15 +41,14 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - set -e -o pipefail;
-          sleep 20m;
+          sleep 5s;
           cat /etc/ovpnconfig | base64 -d >> /opt/opvn-cert/bogvpn;
-          docker run --rm -d -v /opt/opvn-cert/bogvpn:/opt/opvn-cert/bogvpn --privileged dperson/openvpn-client openvpn --config /opt/opvn-cert/bogvpn;
+          docker run --rm -d --network=host -v /opt/opvn-cert/bogvpn:/opt/opvn-cert/bogvpn --privileged dperson/openvpn-client openvpn --config /opt/opvn-cert/bogvpn;
           bx login --apikey ${THUNDERDOME_API_KEY} -r us-south;
           bx cs clusters;
           bx cs cluster config --cluster airgapped-poc;
           kubectl get ns;
           kubectl get pods -A;
-          sleep 20m;
   sidecars:
   - image: docker:24-dind
     name: dockerd
