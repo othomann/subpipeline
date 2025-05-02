@@ -10,4 +10,7 @@ spec:
     - name: build-task-sc
       taskRef:
         name: build-task-sc
+    - name: build-task-dind-sc
+      taskRef:
+        name: build-task-dind-sc
    

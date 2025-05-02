@@ -1,0 +1,54 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-task-dind-sc
+  annotations:
+    io.kubernetes.cri.untrusted-workload: "false"
+spec:
+  stepTemplate:
+    env:
+      - name: THUNDERDOME_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: secure-properties
+            key: THUNDERDOME_API_KEY
+  volumes:
+    - name: ovpn
+      secret:
+        secretName: secure-properties
+    - name: docker-storage
+      emptyDir: {}
+    - name: docker-socket
+      emptyDir: {}
+  steps:
+    - name: connectcluster
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.61
+      volumeMounts:
+      - name: ovpn
+        mountPath: /etc/ovpnconfig
+        subPath: OVPN_FILE
+        readOnly: true
+      command: ["/bin/sh", "-c"]
+      args:
+        - set -e -o pipefail;
+          bx login --apikey ${THUNDERDOME_API_KEY} -r us-south;
+          bx cs clusters;
+          bx cs cluster config --cluster airgapped-poc;
+          kubectl get ns;
+          kubectl get pods -A;
+          sleep 5m;
+  sidecars:
+  - image: docker:24-dind
+    name: dockerd
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /var/lib/docker
+      name: docker-storage
+    - mountPath: /var/run/
+      name: docker-socket
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        dockerd-entrypoint.sh --mtu=1400 -H unix:///var/run/docker.sock;
+        
