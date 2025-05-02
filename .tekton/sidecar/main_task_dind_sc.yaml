@@ -28,6 +28,10 @@ spec:
         mountPath: /etc/ovpnconfig
         subPath: OVPN_FILE
         readOnly: true
+      - mountPath: /var/lib/docker
+        name: docker-storage
+      - mountPath: /var/run/
+        name: docker-socket
       command: ["/bin/sh", "-c"]
       args:
         - set -e -o pipefail;
