@@ -37,6 +37,7 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - set -e -o pipefail;
+          sleep 20m;
           mkdir -p /bog/opvpn/config;
           cat /etc/ovpnconfig | base64 -d >> bogvpn;
           cid=$(docker run --rm -d --privileged dperson/openvpn-client);
