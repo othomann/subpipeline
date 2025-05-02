@@ -37,8 +37,8 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - set -e -o pipefail;
-          cat /etc/ovpnconfig | base64 -d >> bogvpn;
-     
+          mkdir -p /bog/opvpn/config;
+          cat /etc/ovpnconfig | base64 -d >> /bog/opvpn/config/bogvpn;
           sleep 20m;
   sidecars:
   - image: docker:24-dind
