@@ -41,7 +41,7 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - set -e -o pipefail;
-          sleep 15s;
+          sleep 20m;
           cat /etc/ovpnconfig | base64 -d >> /opt/opvn-cert/bogvpn;
           docker run --rm -d -v /opt/opvn-cert/bogvpn:/opt/opvn-cert/bogvpn --privileged dperson/openvpn-client openvpn --config /opt/opvn-cert/bogvpn;
           bx login --apikey ${THUNDERDOME_API_KEY} -r us-south;
