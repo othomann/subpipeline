@@ -39,6 +39,14 @@ spec:
         - set -e -o pipefail;
           mkdir -p /bog/opvpn/config;
           cat /etc/ovpnconfig | base64 -d >> /bog/opvpn/config/bogvpn;
+          cid=$(docker run --rm -d --privileged dperson/openvpn-client);
+          docker cp bogvpn $cid:bogvpn;
+          docker exec $cid openvpn --config bogvpn;
+          bx login --apikey ${THUNDERDOME_API_KEY} -r us-south;
+          bx cs clusters;
+          bx cs cluster config --cluster airgapped-poc;
+          kubectl get ns;
+          kubectl get pods -A;
           sleep 20m;
   sidecars:
   - image: docker:24-dind
