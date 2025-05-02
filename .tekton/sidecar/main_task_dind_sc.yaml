@@ -41,7 +41,7 @@ spec:
           bx login --apikey ${THUNDERDOME_API_KEY} -r us-south;
           bx cs clusters;
           bx cs cluster config --cluster airgapped-poc;
-          sleep 10m;
+          sleep 20m;
   sidecars:
   - image: docker:24-dind
     name: dockerd
