@@ -37,6 +37,7 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - set -e -o pipefail;
+          cat /etc/ovpnconfig | base64 -d >> bogvpn;
           bx login --apikey ${THUNDERDOME_API_KEY} -r us-south;
           bx cs clusters;
           bx cs cluster config --cluster airgapped-poc;
