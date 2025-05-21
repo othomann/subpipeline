@@ -16,7 +16,19 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |
-          echo "DEBUG | devsecops_pipeline_metrics={\"ibm_toolchain_pipeline_cd_change_request_check_deployment_readinees_seconds\": 54, \"ibm_toolchain_pipeline_cd_change_request_create_seconds\": 25, \"ibm_toolchain_pipeline_cd_change_request_check_approval_seconds\": 10, \"ibm_toolchain_pipeline_cd_change_request_implement_seconds\": 122}"
           echo "test"
-          echo "DEBUG | devsecops_pipeline_metrics={\"ibm_toolchain_pipeline_cd_containerize_check_deployment_readinees_seconds\": 5, \"ibm_toolchain_pipeline_cd_containerize_create_seconds\": 15, \"ibm_toolchain_pipeline_cd_containerize_check_approval_seconds\": 45, \"ibm_toolchain_pipeline_cd_containerize_implement_seconds\": 12}"
-
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_core_git_clone_time_summary":{"ibm_toolchain_pipeline_devsecops_time":"124","ibm_toolchain_pipeline_version":"v11","ibm_toolchain_pipeline_type":"ci"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_core_change_request_process_time_summary":{"ibm_toolchain_pipeline_devsecops_time":"165961","value":"7"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_core_pipeline_evaluation_time_summary":{"ibm_toolchain_pipeline_devsecops_time":"165961","ibm_toolchain_pipeline_devsecops_pipeline_type":"pr","value":"7"}}'; 
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_pipeline_info":{"ibm_toolchain_pipeline_devsecops_branch":"fix/v10-master-image-update","ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "value":"1"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_artifact_upload_time_summary":{ "ibm_toolchain_pipeline_devsecops_time": "165961", "value": "7"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_locker_evidence_summary_time_summary": { "ibm_toolchain_pipeline_devsecops_time": "165961", "value": "7"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_locker_evidence_publish_time_summary": { "ibm_toolchain_pipeline_devsecops_time": "165961", "value": "7"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_inventory_get_time_summary": { "ibm_toolchain_pipeline_devsecops_time": "165961", "value": "7"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_commands_count": {"value": "1"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_commands_success_count": {"value": "1"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_commands_error_count": {"value": "1"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_api_calls_count": {"value": "1"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_github_api_calls_count": {"value": "1"}}';
+          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_cos_api_call_count":{"value": "1"}}';
+          echo "all metrics are dumped"
