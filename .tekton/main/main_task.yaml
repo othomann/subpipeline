@@ -13,7 +13,7 @@ spec:
     - name: print-versions
       image: $(params.image_url)
       imagePullPolicy: Always
-      command: ["/bin/bash", "-c"]
+      command: ["/bin/sh", "-c"]
       args:
         - |
           echo "test"
