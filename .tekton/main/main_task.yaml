@@ -17,18 +17,18 @@ spec:
       args:
         - |
           echo "test"
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_core_git_clone_time_summary":{"ibm_toolchain_pipeline_devsecops_time":"124","ibm_toolchain_pipeline_version":"v11","ibm_toolchain_pipeline_type":"ci"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_core_change_request_process_time_summary":{"ibm_toolchain_pipeline_devsecops_time":"165961","value":"7"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_core_pipeline_evaluation_time_summary":{"ibm_toolchain_pipeline_devsecops_time":"165961","ibm_toolchain_pipeline_devsecops_pipeline_type":"pr","value":"7"}}'; 
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_pipeline_info":{"ibm_toolchain_pipeline_devsecops_branch":"fix/v10-master-image-update","ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "value":"1"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_artifact_upload_time_summary":{ "ibm_toolchain_pipeline_devsecops_time": "165961", "value": "7"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_locker_evidence_summary_time_summary": { "ibm_toolchain_pipeline_devsecops_time": "165961", "value": "7"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_locker_evidence_publish_time_summary": { "ibm_toolchain_pipeline_devsecops_time": "165961", "value": "7"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_inventory_get_time_summary": { "ibm_toolchain_pipeline_devsecops_time": "165961", "value": "7"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_commands_count": {"value": "1"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_commands_success_count": {"value": "1"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_commands_error_count": {"value": "1"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_api_calls_count": {"value": "1"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_github_api_calls_count": {"value": "1"}}';
-          echo '::debug::{"ibm_toolchain_pipeline_devsecops_cli_cos_api_call_count":{"value": "1"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_core_git_clone_time_summary","data":{"value":"124","ibm_toolchain_pipeline_version":"v11","ibm_toolchain_pipeline_type":"ci"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_core_change_request_process_time_summary", "data" :{"value":"165961","ibm_toolchain_pipeline_version":"v11","ibm_toolchain_pipeline_type":"ci"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_core_pipeline_evaluation_time_summary", "data":{"value":"165961","ibm_toolchain_pipeline_version":"v10","ibm_toolchain_pipeline_type":"pr"}}'; 
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_pipeline_info", "data":{"value":"fix/v10-master-image-update","ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_artifact_upload_time_summary", "data" :{ "value": "165961", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_locker_evidence_summary_time_summary", "data" : { "value": "165961", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_locker_evidence_publish_time_summary", "data" : { "value": "165961", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_inventory_get_time_summary", "data" : { "value": "165961", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_commands_count", "data" : {"value": "1", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_commands_success_count", "data" : {"value": "1", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_commands_error_count", "data" : {"value": "1", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_api_calls_count", "data" : {"value": "1", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_github_api_calls_count", "data" : {"value": "1", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
+          echo '::debug::{"type" : "ibm_toolchain_pipeline_devsecops_cli_cos_api_call_count", "data" : {"value": "1", "ibm_toolchain_pipeline_devsecops_pipeline_type":"ci", "ibm_toolchain_pipeline_version":"v11"}}';
           echo "all metrics are dumped"
